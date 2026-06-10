@@ -13,7 +13,7 @@ const _saveLocalFallback = (key, data) => {
     existing.push(record);
     localStorage.setItem(key, JSON.stringify(existing));
     return record.id;
-  } catch (e) {
+  } catch {
     return Math.random().toString(36).substring(2, 11);
   }
 };
@@ -69,8 +69,10 @@ if (isConfigured) {
 }
 
 // ─── Helper: Log Analytics Event ─────────────────────────────────────────────
-export const trackEvent = (_eventName, _params = {}) => {
+export const trackEvent = (eventName, params) => {
   // no-op when Firebase not available
+  void eventName;
+  void params;
 };
 
 // ─── Firestore: Submit Enrollment Form ───────────────────────────────────────
@@ -120,11 +122,11 @@ export const signInWithGoogle = async () => {
       return { user: result.user };
     } catch (error) {
       if (error.code === 'auth/popup-blocked') {
-        throw new Error('Popup was blocked by the browser. Please allow popups for this site.');
+        throw new Error('Popup was blocked by the browser. Please allow popups for this site.', { cause: error });
       } else if (error.code === 'auth/popup-closed-by-user') {
-        throw new Error('Sign-in was cancelled.');
+        throw new Error('Sign-in was cancelled.', { cause: error });
       } else if (error.code === 'auth/unauthorized-domain') {
-        throw new Error('This domain is not authorized in Firebase console.');
+        throw new Error('This domain is not authorized in Firebase console.', { cause: error });
       }
       throw error;
     }
