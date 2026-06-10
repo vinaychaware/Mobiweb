@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Enrollments Collection ─────────────────────────────────────────────
+    // Allow anyone to write enrollments (public enrollment form)
+    // Only authenticated users or admin can read
+    match /enrollments/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'program'])
+                    && request.resource.data.name is string
+                    && request.resource.data.email is string
+                    && request.resource.data.email.matches('.*@.*\\..*');
+      allow read: if request.auth != null;
+      allow update, delete: if false; // Immutable once created
+    }
+
+    // ── Contact Leads Collection ───────────────────────────────────────────
+    // Allow anyone to submit a contact message
+    match /leads/{docId} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message'])
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 5;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // ── Deny all other collections ─────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

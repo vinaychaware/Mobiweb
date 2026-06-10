@@ -72,7 +72,10 @@ export default function Programs({ onOpenEnroll }) {
   ];
 
   return (
-    <section id="programs" className="py-24 relative overflow-hidden bg-slate-900/30 border-y border-slate-900">
+    <section id="programs" className="py-24 relative overflow-hidden bg-slate-900/30 border-y border-slate-900/60">
+      {/* Workshops anchor for nav link */}
+      <div id="workshops" className="absolute -top-20" />
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         
         {/* Section Header */}

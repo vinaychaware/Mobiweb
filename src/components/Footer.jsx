@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Rocket, CheckCircle2 } from 'lucide-react';
 import { submitContactLead } from '../firebase';
+import { useToast } from './Toast';
 
 export default function Footer() {
+  const { addToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,12 +58,20 @@ export default function Footer() {
         setSuccess(true);
         setSimulated(result.simulated || false);
         setFormData({ name: '', email: '', phone: '', message: '' });
-        
-        // Hide success message after 5 seconds
+        addToast({
+          type: 'success',
+          title: 'Message Sent!',
+          message: 'We will get back to you as soon as possible.',
+        });
         setTimeout(() => setSuccess(false), 5000);
       }
     } catch (err) {
       console.error(err);
+      addToast({
+        type: 'error',
+        title: 'Failed to Send',
+        message: 'Please check your connection and try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }

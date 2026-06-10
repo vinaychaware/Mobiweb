@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitEnrollment } from '../firebase';
+import { useToast } from './Toast';
 
 export default function EnrollmentForm({ isOpen, onClose, prefilledProgram = '' }) {
+  const { addToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -83,26 +85,27 @@ export default function EnrollmentForm({ isOpen, onClose, prefilledProgram = '' 
       if (result.success) {
         setSubmitStatus('success');
         setSimulated(result.simulated || false);
-        
-        // Trigger premium celebration confetti
-        confetti({
-          particleCount: 120,
-          spread: 70,
-          origin: { y: 0.6 }
+
+        // Confetti celebration
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+
+        // Toast notification
+        addToast({
+          type: 'success',
+          title: 'Enrollment Submitted!',
+          message: 'Our coordinator will contact you within 24 hours.',
         });
-        
-        // Clear inputs on success
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          userType: 'Student',
-          program: '',
-        });
+
+        setFormData({ name: '', email: '', phone: '', userType: 'Student', program: '' });
       }
     } catch (err) {
       console.error(err);
       setSubmitStatus('error');
+      addToast({
+        type: 'error',
+        title: 'Submission Failed',
+        message: 'Please check your connection and try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }

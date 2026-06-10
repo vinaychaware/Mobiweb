@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { LogIn, LogOut, Download, Globe, Clock, Video, FileText, Code2, AlertTriangle } from 'lucide-react';
 import { signInWithGoogle, logoutUser } from '../firebase';
+import { useToast } from './Toast';
 
 export default function StudentPortal() {
+  const { addToast } = useToast();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSimulated, setIsSimulated] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const handleLogin = async () => {
     setLoading(true);
+    setAuthError('');
     try {
       const res = await signInWithGoogle();
       setUser(res.user);
       setIsSimulated(res.simulated || false);
     } catch (err) {
       console.error("Login failed:", err);
+      setAuthError(err.message || 'Sign-in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -108,6 +113,11 @@ export default function StudentPortal() {
               />
               <span>{loading ? 'Authenticating...' : 'Sign In with Google'}</span>
             </button>
+            {authError && (
+              <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-3 text-xs text-red-300 text-center leading-relaxed">
+                {authError}
+              </div>
+            )}
           </div>
         ) : (
           /* LOGGED IN PORTAL VIEW */
@@ -200,7 +210,11 @@ export default function StudentPortal() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => alert(`Simulating download: ${dl.name}`)}
+                       onClick={() => addToast({
+                          type: 'success',
+                          title: 'Download Started',
+                          message: `${dl.name} is being prepared for download.`,
+                        })}
                         className="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-gray-400 hover:text-white rounded-lg transition-colors cursor-pointer"
                       >
                         <Download className="w-4 h-4" />

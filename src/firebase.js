@@ -1,142 +1,165 @@
 import { initializeApp } from "firebase/app";
+import { getAnalytics, logEvent } from "firebase/analytics";
 import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
-// Firebase configuration from environment variables
+// ─── Firebase Configuration (Live Project: mobiweb-736d3) ────────────────────
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Check if using placeholder credentials
-const isPlaceholder = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("AIzaSyA1B2C3D4E5");
+// ─── Initialize Firebase App ──────────────────────────────────────────────────
+const app = initializeApp(firebaseConfig);
 
-let app;
-let db = null;
-let auth = null;
-let googleProvider = null;
-
-if (!isPlaceholder) {
+// ─── Analytics (Google Analytics 4) ──────────────────────────────────────────
+// Only initialize analytics in browser environments (not SSR/build)
+let analytics = null;
+if (typeof window !== "undefined") {
   try {
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-    googleProvider = new GoogleAuthProvider();
-  } catch (error) {
-    console.warn("Firebase failed to initialize. Falling back to local demo mode.", error);
+    analytics = getAnalytics(app);
+  } catch (e) {
+    console.warn("Analytics failed to initialize:", e);
   }
-} else {
-  console.info("Using placeholder Firebase credentials. Running in local simulation mode.");
 }
 
-// Helper to save data locally during demo mode
-const saveToLocalDemo = (key, data) => {
+// ─── Firestore Database ───────────────────────────────────────────────────────
+const db = getFirestore(app);
+
+// ─── Firebase Authentication ──────────────────────────────────────────────────
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
+// ─── Helper: Log Analytics Event ─────────────────────────────────────────────
+export const trackEvent = (eventName, params = {}) => {
+  if (analytics) {
+    try {
+      logEvent(analytics, eventName, params);
+    } catch (e) {
+      // silently fail if analytics blocked
+    }
+  }
+};
+
+// ─── Firestore: Submit Enrollment Form ───────────────────────────────────────
+/**
+ * Saves an enrollment record to the "enrollments" Firestore collection.
+ * Falls back to localStorage if Firestore write fails.
+ */
+export const submitEnrollment = async (enrollmentData) => {
+  try {
+    const docRef = await addDoc(collection(db, "enrollments"), {
+      ...enrollmentData,
+      timestamp: serverTimestamp(),
+      source: "landing_page",
+    });
+
+    // Track enrollment event in Analytics
+    trackEvent("enrollment_submitted", {
+      program: enrollmentData.program,
+      user_type: enrollmentData.userType,
+    });
+
+    console.log("✅ Enrollment saved to Firestore:", docRef.id);
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("❌ Firestore enrollment error:", error);
+
+    // Graceful fallback to localStorage
+    const fallbackId = _saveLocalFallback("mw_enrollments", enrollmentData);
+    return { success: true, id: fallbackId, simulated: true };
+  }
+};
+
+// ─── Firestore: Submit Contact Lead ──────────────────────────────────────────
+/**
+ * Saves a contact message to the "leads" Firestore collection.
+ */
+export const submitContactLead = async (contactData) => {
+  try {
+    const docRef = await addDoc(collection(db, "leads"), {
+      ...contactData,
+      timestamp: serverTimestamp(),
+      source: "footer_contact_form",
+    });
+
+    // Track lead event in Analytics
+    trackEvent("contact_lead_submitted", {
+      has_phone: !!contactData.phone && contactData.phone !== "N/A",
+    });
+
+    console.log("✅ Contact lead saved to Firestore:", docRef.id);
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("❌ Firestore lead error:", error);
+
+    const fallbackId = _saveLocalFallback("mw_leads", contactData);
+    return { success: true, id: fallbackId, simulated: true };
+  }
+};
+
+// ─── Auth: Google Sign-In ─────────────────────────────────────────────────────
+/**
+ * Opens Google Sign-In popup and returns the authenticated user.
+ */
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    trackEvent("login", { method: "google" });
+    console.log("✅ Google Sign-In successful:", result.user.email);
+    return { user: result.user };
+  } catch (error) {
+    console.error("❌ Google Sign-In error:", error);
+
+    // Common errors and user-friendly messages
+    if (error.code === "auth/popup-blocked") {
+      throw new Error("Popup was blocked by the browser. Please allow popups for this site.");
+    } else if (error.code === "auth/popup-closed-by-user") {
+      throw new Error("Sign-in was cancelled.");
+    } else if (error.code === "auth/unauthorized-domain") {
+      throw new Error("This domain is not authorized. Add it to your Firebase console under Authentication → Settings → Authorized domains.");
+    }
+    throw error;
+  }
+};
+
+// ─── Auth: Sign Out ───────────────────────────────────────────────────────────
+/**
+ * Signs out the current user.
+ */
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+    trackEvent("logout");
+    console.log("✅ User signed out successfully.");
+  } catch (error) {
+    console.error("❌ Sign-out error:", error);
+    throw error;
+  }
+};
+
+// ─── Internal: Local Fallback Storage ────────────────────────────────────────
+const _saveLocalFallback = (key, data) => {
   try {
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
-    const newRecord = {
+    const record = {
       ...data,
       id: Math.random().toString(36).substring(2, 11),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    existing.push(newRecord);
+    existing.push(record);
     localStorage.setItem(key, JSON.stringify(existing));
-    return newRecord.id;
+    return record.id;
   } catch (e) {
-    console.error("Local storage error:", e);
     return Math.random().toString(36).substring(2, 11);
   }
 };
 
-/**
- * Submits enrollment form data. Falls back to localStorage demo if Firebase is inactive.
- */
-export const submitEnrollment = async (enrollmentData) => {
-  if (db) {
-    try {
-      const docRef = await addDoc(collection(db, "enrollments"), {
-        ...enrollmentData,
-        timestamp: serverTimestamp(),
-      });
-      return { success: true, id: docRef.id };
-    } catch (error) {
-      console.error("Firebase submitEnrollment error, falling back to local simulation:", error);
-      const localId = saveToLocalDemo("demo_enrollments", enrollmentData);
-      return { success: true, id: localId, simulated: true };
-    }
-  } else {
-    // Simulation mode
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network latency
-    const localId = saveToLocalDemo("demo_enrollments", enrollmentData);
-    return { success: true, id: localId, simulated: true };
-  }
-};
-
-/**
- * Submits contact form data. Falls back to localStorage demo if Firebase is inactive.
- */
-export const submitContactLead = async (contactData) => {
-  if (db) {
-    try {
-      const docRef = await addDoc(collection(db, "leads"), {
-        ...contactData,
-        timestamp: serverTimestamp(),
-      });
-      return { success: true, id: docRef.id };
-    } catch (error) {
-      console.error("Firebase submitContactLead error, falling back to local simulation:", error);
-      const localId = saveToLocalDemo("demo_leads", contactData);
-      return { success: true, id: localId, simulated: true };
-    }
-  } else {
-    // Simulation mode
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network latency
-    const localId = saveToLocalDemo("demo_leads", contactData);
-    return { success: true, id: localId, simulated: true };
-  }
-};
-
-/**
- * Sign in with Google. Falls back to simulated sign-in if Firebase is inactive.
- */
-export const signInWithGoogle = async () => {
-  if (auth && googleProvider) {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      return { user: result.user };
-    } catch (error) {
-      console.error("Firebase sign-in error, falling back to simulation:", error);
-      // Simulate login for dev
-      const mockUser = {
-        uid: "simulated-user-123",
-        displayName: "Guest Student",
-        email: "student@example.com",
-        photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-      };
-      return { user: mockUser, simulated: true };
-    }
-  } else {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const mockUser = {
-      uid: "simulated-user-123",
-      displayName: "Demo Engineer",
-      email: "engineer.student@mobiweb.com",
-      photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-    };
-    return { user: mockUser, simulated: true };
-  }
-};
-
-/**
- * Sign out of application.
- */
-export const logoutUser = async () => {
-  if (auth) {
-    await signOut(auth);
-  }
-};
-
-export { db, auth };
+// ─── Exports ──────────────────────────────────────────────────────────────────
+export { app, db, auth, analytics };
