@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Rocket, CheckCircle2 } from 'lucide-react';
 import { submitContactLead } from '../firebase';
 import { useToast } from './Toast';
@@ -166,8 +166,9 @@ export default function Footer() {
                 { name: 'Home', href: '#home' },
                 { name: 'About Us', href: '#about' },
                 { name: 'Programs', href: '#programs' },
+                { name: 'Blogs', href: '#blogs' },
                 { name: 'Student Portal', href: '#portal' },
-                { name: 'Privacy Policy', href: '#' }
+                { name: 'Admin Portal', href: '#admin' }
               ].map((link, i) => (
                 <li key={i}>
                   <a href={link.href} className="text-gray-400 hover:text-white text-sm font-light transition-colors">

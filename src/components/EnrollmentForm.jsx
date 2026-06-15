@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitEnrollment } from '../firebase';
@@ -22,13 +22,16 @@ export default function EnrollmentForm({ isOpen, onClose, prefilledProgram = '' 
   // Sync prefilled program when modal opens
   useEffect(() => {
     if (isOpen) {
-      setFormData(prev => ({
-        ...prev,
-        program: prefilledProgram || 'College Training Programs'
-      }));
-      setErrors({});
-      setSubmitStatus(null);
-      setSimulated(false);
+      const timer = setTimeout(() => {
+        setFormData(prev => ({
+          ...prev,
+          program: prefilledProgram || 'College Training Programs'
+        }));
+        setErrors({});
+        setSubmitStatus(null);
+        setSimulated(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, prefilledProgram]);
 

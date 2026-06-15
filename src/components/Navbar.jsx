@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Rocket, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, Rocket, Sun, Moon } from 'lucide-react';
 
-export default function Navbar({ onOpenEnroll }) {
+export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -10,17 +10,33 @@ export default function Navbar({ onOpenEnroll }) {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Active section detection
-      const sections = ['home', 'about', 'programs', 'workshops', 'audience', 'portal', 'contact'];
-      for (const id of sections.reverse()) {
+      // Page bottom detection to force Contact link active
+      const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+      if (isAtBottom) {
+        setActiveSection('contact');
+        return;
+      }
+
+      // Active section detection using absolute document-relative offsets
+      const sections = ['home', 'about', 'programs', 'workshops', 'audience', 'blogs', 'portal', 'contact'];
+      const scrollPosition = window.scrollY + 140; // Offset threshold for highlighting
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const id = sections[i];
         const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 120) {
-          setActiveSection(id);
-          break;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const absoluteTop = rect.top + window.scrollY;
+          if (scrollPosition >= absoluteTop) {
+            setActiveSection(id);
+            break;
+          }
         }
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once initially
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -29,6 +45,7 @@ export default function Navbar({ onOpenEnroll }) {
     { name: 'About Us',  href: '#about' },
     { name: 'Programs',  href: '#programs' },
     { name: 'Workshops', href: '#workshops' },
+    { name: 'Blogs',     href: '#blogs' },
     { name: 'Contact',   href: '#contact' },
   ];
 
@@ -64,7 +81,14 @@ export default function Navbar({ onOpenEnroll }) {
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.href.replace('#', '');
+              const targetId = link.href.replace('#', '');
+              let isActive = activeSection === targetId;
+              
+              // Map sub-sections to their parent navigation link
+              if (targetId === 'programs') {
+                isActive = ['programs', 'audience', 'portal'].includes(activeSection);
+              }
+              
               return (
                 <button
                   key={link.name}
@@ -84,8 +108,15 @@ export default function Navbar({ onOpenEnroll }) {
             })}
           </div>
 
-          {/* Enroll CTA */}
-          <div className="hidden md:flex items-center">
+          {/* Theme Switcher & Enroll CTA */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl border border-slate-800 text-gray-400 hover:text-white bg-slate-900/40 hover:bg-slate-900 transition-colors cursor-pointer focus:outline-none"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
+            </button>
             <button
               id="nav-enroll-btn"
               onClick={onOpenEnroll}
@@ -95,8 +126,15 @@ export default function Navbar({ onOpenEnroll }) {
             </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
+          {/* Mobile Theme Switcher & Menu Toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-300 hover:text-white rounded-lg hover:bg-white/5 transition-colors focus:outline-none"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
+            </button>
             <button
               id="mobile-menu-btn"
               onClick={() => setIsOpen(!isOpen)}
@@ -116,15 +154,26 @@ export default function Navbar({ onOpenEnroll }) {
         }`}
       >
         <div className="px-4 space-y-1">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => handleNavClick(link.href)}
-              className="block w-full text-left text-gray-300 hover:text-white hover:bg-white/5 py-2.5 px-3 rounded-lg font-medium text-base tracking-wide transition-colors cursor-pointer"
-            >
-              {link.name}
-            </button>
-          ))}
+          {navLinks.map((link) => {
+            const targetId = link.href.replace('#', '');
+            let isActive = activeSection === targetId;
+            if (targetId === 'programs') {
+              isActive = ['programs', 'audience', 'portal'].includes(activeSection);
+            }
+            return (
+              <button
+                key={link.name}
+                onClick={() => handleNavClick(link.href)}
+                className={`block w-full text-left py-2.5 px-3 rounded-lg font-medium text-base tracking-wide transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? 'text-cyan-400 bg-cyan-500/10 font-semibold border-l-2 border-cyan-400 rounded-l-none'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {link.name}
+              </button>
+            );
+          })}
           <button
             id="mobile-enroll-btn"
             onClick={() => { setIsOpen(false); onOpenEnroll(); }}

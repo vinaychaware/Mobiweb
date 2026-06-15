@@ -1,80 +1,97 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Laptop, Code, GraduationCap, Users2, ShieldAlert, CheckCircle2, ArrowUpRight, X } from 'lucide-react';
+import { getPrograms } from '../firebase';
+
+// Helper to map icon name strings to Lucide icons dynamically
+const getIcon = (name) => {
+  const IconComponent = { Laptop, Code, GraduationCap, Users2, ShieldAlert, CheckCircle2 }[name] || GraduationCap;
+  
+  let colorClass = 'text-cyan-400';
+  if (name === 'Laptop') colorClass = 'text-purple-400';
+  if (name === 'Code') colorClass = 'text-indigo-400';
+  if (name === 'ShieldAlert') colorClass = 'text-red-400';
+  if (name === 'CheckCircle2') colorClass = 'text-green-400';
+
+  return <IconComponent className={`w-8 h-8 ${colorClass}`} />;
+};
 
 export default function Programs({ onOpenEnroll }) {
+  const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const programs = [
-    {
-      id: 'training',
-      title: 'College Training Programs',
-      badge: 'Full-Semester / Customized',
-      icon: <GraduationCap className="w-8 h-8 text-cyan-400" />,
-      description: 'Integrated engineering training curriculum running alongside academic semesters, focusing on industry-ready stacks.',
-      details: 'Our long-term academic tie-up programs deliver deep technical competency directly inside the college campus.',
-      features: [
-        'Curriculum mapped to active university credit requirements',
-        'Stack: Full-Stack Web Dev (MERN), AI/ML with Python, or cloud infrastructure',
-        'Continuous assessments, mid-terms, and final project exhibitions',
-        'Accreditation documentation and student performance matrices'
-      ],
-      duration: '45 to 90 Hours',
-      audience: '1st to 3rd Year Engineering Students'
-    },
-    {
-      id: 'workshops',
-      title: 'Hands-on Workshops',
-      badge: '2 to 3 Days Bootcamps',
-      icon: <Code className="w-8 h-8 text-indigo-400" />,
-      description: 'Immersive coding sprints and technical bootcamps to build, deploy, and showcase working applications.',
-      details: 'Intense, high-impact weekend or boot-camp format events structured around building a single production-ready project.',
-      features: [
-        'Project: Dockerizing microservices, GitOps pipelines, or UI design with Figma/React',
-        '100% practical, zero slide-only lectures',
-        'Interactive team hackathons on the final day',
-        'Instant digital verified certificate of completion'
-      ],
-      duration: '16 Hours (Intense)',
-      audience: 'Open to All Branches & Streams'
-    },
-    {
-      id: 'internships',
-      title: 'Industrial Internships',
-      badge: '4 to 12 Weeks',
-      icon: <Laptop className="w-8 h-8 text-purple-400" />,
-      description: 'Guided corporate internships where students work on client briefs under senior tech mentors.',
-      details: 'Bridge the gap from developer to employee. Experience Agile standups, code reviews, and project management tools first-hand.',
-      features: [
-        'Experience real software lifecycle sprints with Jira and Git',
-        'Dual mentorship: Tech leads + Career guidance counsellors',
-        'Letters of recommendation for top-performing interns',
-        'Guaranteed interview calls with partner recruiters'
-      ],
-      duration: '1 to 3 Months',
-      audience: 'Final & Pre-Final Year Students'
-    },
-    {
-      id: 'webinars',
-      title: 'Webinars & Guest Lectures',
-      badge: 'Free Live Events',
-      icon: <Users2 className="w-8 h-8 text-cyan-400" />,
-      description: 'Expert talks on emerging technologies, career roadmaps, and resume-building strategies.',
-      details: 'Connect with technical experts from top MNCs. Discover what skills are in demand and how to prepare for interviews.',
-      features: [
-        'Topic-centric sessions (e.g. AI-driven development, entering Web3, cloud careers)',
-        'Live Q&A with tech architects and talent acquisition managers',
-        'Access to webinars library, slides, and code templates',
-        'Network with peer students across different states'
-      ],
-      duration: '2 Hours Sessions',
-      audience: 'Students, Faculty & Fresh Graduates'
-    }
-  ];
+  useEffect(() => {
+    let active = true;
+    const loadPrograms = async () => {
+      try {
+        const data = await getPrograms();
+        if (active) {
+          setPrograms(data);
+        }
+      } catch (err) {
+        console.error('Error fetching programs:', err);
+        if (active) {
+          setError('Failed to load programs.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+    loadPrograms();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="programs" className="py-24 relative overflow-hidden bg-slate-900/30 border-y border-slate-900/60">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="font-heading text-3xl font-bold text-white">Loading Offerings...</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[1, 2, 3, 4].map((n) => (
+              <div 
+                key={n} 
+                className="glass-card rounded-2xl p-8 border-slate-800 flex flex-col justify-between h-72 animate-pulse"
+              >
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className="w-12 h-12 bg-slate-800 rounded-xl" />
+                    <div className="w-24 h-6 bg-slate-800 rounded-full" />
+                  </div>
+                  <div className="w-3/4 h-6 bg-slate-800 rounded" />
+                  <div className="w-full h-4 bg-slate-800 rounded" />
+                  <div className="w-5/6 h-4 bg-slate-800 rounded" />
+                </div>
+                <div className="flex justify-between pt-6 border-t border-slate-850">
+                  <div className="w-24 h-5 bg-slate-800 rounded" />
+                  <div className="w-28 h-8 bg-slate-800 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="programs" className="py-24 relative overflow-hidden bg-slate-900/30 border-y border-slate-900/60 text-center">
+        <p className="text-red-400 font-medium">{error}</p>
+      </section>
+    );
+  }
 
   return (
     <section id="programs" className="py-24 relative overflow-hidden bg-slate-900/30 border-y border-slate-900/60">
       {/* Workshops anchor for nav link */}
-      <div id="workshops" className="absolute -top-20" />
+      <div id="workshops" className="absolute top-[25%] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         
@@ -106,7 +123,7 @@ export default function Programs({ onOpenEnroll }) {
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-                    {prog.icon}
+                    {getIcon(prog.iconName)}
                   </div>
                   <span className="bg-slate-900 text-cyan-400 border border-slate-800/80 rounded-full px-3.5 py-1 text-xs font-semibold tracking-wider">
                     {prog.badge}
@@ -168,17 +185,19 @@ export default function Programs({ onOpenEnroll }) {
                 <p className="text-gray-300 mt-2 font-light leading-relaxed">{selectedProgram.details}</p>
               </div>
 
-              <div>
-                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Key Learning Modules</h4>
-                <ul className="mt-3 space-y-2.5">
-                  {selectedProgram.features.map((feat, i) => (
-                    <li key={i} className="flex items-start space-x-2 text-gray-300 font-light text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {selectedProgram.features && selectedProgram.features.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Key Learning Modules</h4>
+                  <ul className="mt-3 space-y-2.5">
+                    {selectedProgram.features.map((feat, i) => (
+                      <li key={i} className="flex items-start space-x-2 text-gray-300 font-light text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800/60">
                 <div>

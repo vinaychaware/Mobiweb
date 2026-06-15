@@ -1,12 +1,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Light mode values (default) */
+  --primary-950: #f8fafc; /* light slate-50 */
+  --slate-900: #ffffff;    /* pure white for cards */
+  --slate-950: #f1f5f9;    /* light slate-100 */
+  --slate-850: #cbd5e1;    /* light slate-300 */
+  --slate-800: #e2e8f0;    /* light slate-200 */
+  --slate-700: #cbd5e1;    /* light slate-300 */
+  
+  --text-white: #0f172a;   /* dark slate-900 */
+  --text-gray-100: #1e293b; /* body text (slate-800) */
+  --text-gray-200: #334155; /* slate-700 */
+  --text-gray-300: #475569; /* slate-600 */
+  --text-gray-400: #475569; /* slate-600 (darker slate for better inactive contrast) */
+  --text-gray-500: #64748b; /* slate-500 */
+  
+  --glass-nav-bg: rgba(248, 250, 252, 0.85);
+  --glass-card-bg: rgba(255, 255, 255, 0.7);
+  --glass-modal-bg: rgba(255, 255, 255, 0.95);
+  --border-glass: rgba(15, 23, 42, 0.08);
+  --grid-line: rgba(15, 23, 42, 0.04);
+}
+
+.dark {
+  /* Dark mode values */
+  --primary-950: #0b0f19;
+  --slate-900: #0f172a;
+  --slate-950: #070a13;
+  --slate-850: #1a2333;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  
+  --text-white: #ffffff;
+  --text-gray-100: #f3f4f6;
+  --text-gray-200: #e5e7eb;
+  --text-gray-300: #d1d5db;
+  --text-gray-400: #9ca3af;
+  --text-gray-500: #6b7280;
+  
+  --glass-nav-bg: rgba(11, 15, 25, 0.75);
+  --glass-card-bg: rgba(15, 23, 42, 0.5);
+  --glass-modal-bg: rgba(11, 15, 25, 0.92);
+  --border-glass: rgba(255, 255, 255, 0.06);
+  --grid-line: rgba(255, 255, 255, 0.03);
+}
+
 /* ─── Theme Tokens ──────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Outfit', sans-serif;
 
-  --color-primary-950: #0b0f19;
+  --color-primary-950: var(--primary-950);
+  --color-slate-900: var(--slate-900);
+  --color-slate-950: var(--slate-950);
+  --color-slate-850: var(--slate-850);
+  --color-slate-800: var(--slate-800);
+  --color-slate-700: var(--slate-700);
+
   --color-brand-cyan: #06b6d4;
   --color-brand-indigo: #6366f1;
   --color-brand-purple: #a855f7;
@@ -68,52 +122,180 @@ html {
   font-family: var(--font-sans);
 }
 
+section, footer {
+  scroll-margin-top: 80px;
+}
+
 body {
-  background-color: var(--color-primary-950);
-  color: #f3f4f6;
+  background-color: var(--primary-950);
+  color: var(--text-gray-100);
   overflow-x: hidden;
   margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Custom Scrollbar ──────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0b0f19; }
-::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
+::-webkit-scrollbar-track { background: var(--primary-950); }
+::-webkit-scrollbar-thumb { background: var(--slate-800); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
 /* ─── Glassmorphism Utilities ───────────────────────────────────────────────── */
+/* ─── Glassmorphism Utilities ───────────────────────────────────────────────── */
 .glass-nav {
-  background: rgba(11, 15, 25, 0.75);
+  background: var(--glass-nav-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-glass);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--glass-card-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+html:not(.dark) .glass-card {
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.05), 0 1px 2px 0 rgba(99, 102, 241, 0.02);
 }
 
 .glass-card-hover:hover {
-  background: rgba(30, 41, 59, 0.65);
+  background: var(--glass-card-bg); /* will hover overlay using scale or accent borders */
   border-color: rgba(6, 182, 212, 0.25);
   box-shadow: 0 12px 40px -12px rgba(6, 182, 212, 0.2);
   transform: translateY(-2px);
-  transition: all 0.3s ease;
+}
+
+html:not(.dark) .glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.12);
 }
 
 .glass-modal {
-  background: rgba(11, 15, 25, 0.92);
+  background: var(--glass-modal-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ─── Global overrides for light theme readability ──────────────────────────── */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6 {
+  color: var(--text-white) !important;
+}
+
+html:not(.dark) .text-white {
+  color: var(--text-white) !important;
+}
+
+html:not(.dark) .text-gray-100 { color: var(--text-gray-100) !important; }
+html:not(.dark) .text-gray-200 { color: var(--text-gray-200) !important; }
+html:not(.dark) .text-gray-300 { color: var(--text-gray-300) !important; }
+html:not(.dark) .text-gray-400 { color: var(--text-gray-400) !important; }
+html:not(.dark) .text-gray-500 { color: var(--text-gray-500) !important; }
+
+/* Dynamic color adjustments for tech icon contrast on light background */
+html:not(.dark) .text-cyan-400 { color: #0891b2 !important; }
+html:not(.dark) .text-purple-400 { color: #7c3aed !important; }
+html:not(.dark) .text-indigo-400 { color: #4f46e5 !important; }
+html:not(.dark) .text-red-400 { color: #e11d48 !important; }
+html:not(.dark) .text-green-400 { color: #16a34a !important; }
+
+/* Keep white/gray text light inside elements with dark background gradients or solid dark accents in light mode */
+html:not(.dark) .bg-gradient-to-r,
+html:not(.dark) .bg-gradient-to-r *,
+html:not(.dark) .bg-gradient-to-br,
+html:not(.dark) .bg-gradient-to-br *,
+html:not(.dark) .bg-gradient-to-tr,
+html:not(.dark) .bg-gradient-to-tr *,
+html:not(.dark) .bg-cyan-500,
+html:not(.dark) .bg-cyan-500 *,
+html:not(.dark) .bg-indigo-600,
+html:not(.dark) .bg-indigo-600 *,
+html:not(.dark) .bg-purple-600,
+html:not(.dark) .bg-purple-600 *,
+html:not(.dark) .bg-pink-600,
+html:not(.dark) .bg-pink-600 *,
+html:not(.dark) .bg-indigo-950,
+html:not(.dark) .bg-indigo-950 * {
+  --text-white: #ffffff;
+  --text-gray-100: #f3f4f6;
+  --text-gray-200: #e5e7eb;
+  --text-gray-300: #d1d5db;
+  --text-gray-400: #9ca3af;
+}
+
+/* Maintain hovered text readability on light backgrounds */
+html:not(.dark) .hover\:text-white:hover {
+  color: var(--text-white) !important;
+}
+
+/* Maintain active/hover navbar backgrounds in light mode */
+html:not(.dark) .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.06) !important;
+}
+html:not(.dark) .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Dynamic Input styles for light mode */
+html:not(.dark) input,
+html:not(.dark) textarea,
+html:not(.dark) select {
+  color: var(--text-white) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--slate-850) !important;
+}
+
+html:not(.dark) input:focus,
+html:not(.dark) textarea:focus,
+html:not(.dark) select:focus {
+  border-color: #0891b2 !important;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1) !important;
+}
+
+html:not(.dark) ::placeholder {
+  color: var(--text-gray-400) !important;
+}
+
+/* Ensure background hero image does not clash with dark text in light mode */
+html:not(.dark) #home > div:first-child {
+  opacity: 0.12 !important;
+}
+
+/* Make page-wide background glows slightly more intense but soft in light mode */
+html:not(.dark) .bg-cyan-500\/10 {
+  background-color: rgba(6, 182, 212, 0.16) !important;
+}
+html:not(.dark) .bg-indigo-500\/10 {
+  background-color: rgba(99, 102, 241, 0.16) !important;
+}
+
+/* Navbar links active state highlighting in light mode */
+html:not(.dark) #navbar button.text-white {
+  color: #0891b2 !important;
+  background-color: rgba(8, 145, 178, 0.08) !important;
 }
 
 /* ─── Gradient Text ─────────────────────────────────────────────────────────── */
 .gradient-text-cyan-indigo {
   background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+html:not(.dark) .gradient-text-cyan-indigo {
+  background: linear-gradient(135deg, #0891b2 0%, #4f46e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -126,8 +308,8 @@ body {
   background-clip: text;
 }
 
-.gradient-text-gold {
-  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+html:not(.dark) .gradient-text-purple-pink {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -151,12 +333,22 @@ body {
   box-shadow: 0 0 30px -5px rgba(168, 85, 247, 0.4);
 }
 
+html:not(.dark) .glow-teal {
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.35), 0 4px 12px -3px rgba(6, 182, 212, 0.15);
+}
+html:not(.dark) .glow-indigo {
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.25);
+}
+html:not(.dark) .glow-purple {
+  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.22);
+}
+
 /* ─── Grid Background Pattern ───────────────────────────────────────────────── */
 .bg-grid-pattern {
   background-size: 40px 40px;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 }
 
 /* ─── Toast Notifications ───────────────────────────────────────────────────── */
@@ -213,4 +405,8 @@ body {
 .section-divider {
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.2), transparent);
+}
+
+html:not(.dark) .section-divider {
+  background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.08), rgba(99, 102, 241, 0.08), transparent);
 }
