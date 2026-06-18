@@ -104,6 +104,38 @@ export const trackEvent = (eventName, params) => {
 
 // ─── Firestore: Submit Enrollment Form ───────────────────────────────────────
 export const submitEnrollment = async (enrollmentData) => {
+  // Common function to send Web3Forms notification email
+  const sendEmailNotification = async (isDemo = false) => {
+    const web3FormsKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
+    if (!web3FormsKey) return;
+    try {
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: web3FormsKey,
+          subject: `New Enrollment Alert${isDemo ? ' (Demo Mode)' : ''}: ${enrollmentData.name} (${enrollmentData.program})`,
+          from_name: 'Mobiweb Global Solutions',
+          to_email: 'ashutosh.agarwal@mobiwebgs.com',
+          name: enrollmentData.name,
+          email: enrollmentData.email,
+          phone: enrollmentData.phone,
+          program: enrollmentData.program,
+          userType: enrollmentData.userType,
+          college: enrollmentData.college || 'N/A',
+          gradYear: enrollmentData.gradYear || 'N/A',
+          message: `A new person has enrolled for a course.\n\nEnrollment Details:\n------------------\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nProgram: ${enrollmentData.program}\nUser Type: ${enrollmentData.userType}\nCollege/Company: ${enrollmentData.college || 'N/A'}\nGraduation Year: ${enrollmentData.gradYear || 'N/A'}`
+        })
+      });
+      console.log('✉️ Enrollment email notification sent to ashutosh.agarwal@mobiwebgs.com via Web3Forms');
+    } catch (mailError) {
+      console.error('❌ Failed to send enrollment email via Web3Forms:', mailError);
+    }
+  };
+
   if (_db) {
     try {
       const docRef = await withTimeout(
@@ -113,12 +145,41 @@ export const submitEnrollment = async (enrollmentData) => {
           source: 'landing_page',
         })
       );
+
+      // Trigger Web3Forms email if key is configured
+      await sendEmailNotification(false);
+
+      // Write to a 'mail' collection for Firebase Trigger Email extension backup
+      try {
+        await addDoc(collection(_db, 'mail'), {
+          to: 'ashutosh.agarwal@mobiwebgs.com',
+          message: {
+            subject: `New Enrollment: ${enrollmentData.name} - ${enrollmentData.program}`,
+            html: `
+              <h3>New Enrollment Details</h3>
+              <p><strong>Name:</strong> ${enrollmentData.name}</p>
+              <p><strong>Email:</strong> ${enrollmentData.email}</p>
+              <p><strong>Phone:</strong> ${enrollmentData.phone}</p>
+              <p><strong>Course/Program:</strong> ${enrollmentData.program}</p>
+              <p><strong>User Type:</strong> ${enrollmentData.userType}</p>
+              <p><strong>College/Company:</strong> ${enrollmentData.college || 'N/A'}</p>
+              <p><strong>Graduation Year:</strong> ${enrollmentData.gradYear || 'N/A'}</p>
+            `
+          }
+        });
+      } catch (fbMailErr) {
+        console.warn('⚠️ Firestore Trigger Email write skipped or unauthorized:', fbMailErr.message);
+      }
+
       return { success: true, id: docRef.id };
     } catch (error) {
       console.error('❌ Firestore enrollment error:', error);
     }
   }
+
   const fallbackId = _saveLocalFallback('mw_enrollments', enrollmentData);
+  // Send email even in demo fallback mode if configured
+  await sendEmailNotification(true);
   return { success: true, id: fallbackId, simulated: true };
 };
 

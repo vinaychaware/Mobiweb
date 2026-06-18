@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Rocket, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { submitContactLead } from '../firebase';
 import { useToast } from './Toast';
 
@@ -89,9 +89,11 @@ export default function Footer() {
           <div className="lg:col-span-5 space-y-8 text-left">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-400 to-indigo-600 flex items-center justify-center">
-                  <Rocket className="w-4.5 h-4.5 text-white" />
-                </div>
+                <img 
+                  src="/logo.jpg" 
+                  alt="Mobiweb Logo" 
+                  className="w-8 h-8 rounded-lg object-cover" 
+                />
                 <span className="font-heading font-extrabold text-xl tracking-tight text-white">
                   MOBIWEB<span className="text-brand-cyan font-normal text-base ml-1">GLOBAL</span>
                 </span>

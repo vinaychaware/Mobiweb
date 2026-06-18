@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Rocket, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,9 +70,11 @@ export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
 
           {/* Logo */}
           <a href="#home" onClick={() => handleNavClick('#home')} className="flex-shrink-0 flex items-center space-x-2.5 cursor-pointer group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-shadow duration-300">
-              <Rocket className="w-5 h-5 text-white" />
-            </div>
+            <img 
+              src="/logo.jpg" 
+              alt="Mobiweb Logo" 
+              className="w-9 h-9 rounded-xl shadow-lg shadow-cyan-500/10 group-hover:shadow-cyan-500/20 object-cover transition-shadow duration-300"
+            />
             <span className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-white flex items-baseline">
               MOBIWEB<span className="text-brand-cyan font-normal text-base ml-1">GLOBAL</span>
             </span>
