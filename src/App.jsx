@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Programs from './components/Programs';
+import Trainer from './components/Trainer';
 import Audience from './components/Audience';
 import Testimonials from './components/Testimonials';
 import FAQ from './components/FAQ';
@@ -76,6 +77,9 @@ export default function App() {
 
           <div className="section-divider" />
           <Programs onOpenEnroll={handleOpenEnroll} />
+
+          <div className="section-divider" />
+          <Trainer />
 
           <div className="section-divider" />
           <Audience onOpenEnroll={handleOpenEnroll} />

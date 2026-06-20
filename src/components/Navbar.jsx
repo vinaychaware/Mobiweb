@@ -18,7 +18,7 @@ export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
       }
 
       // Active section detection using absolute document-relative offsets
-      const sections = ['home', 'about', 'programs', 'workshops', 'audience', 'blogs', 'portal', 'contact'];
+      const sections = ['home', 'about', 'programs', 'workshops', 'trainer', 'audience', 'blogs', 'portal', 'contact'];
       const scrollPosition = window.scrollY + 140; // Offset threshold for highlighting
 
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -45,6 +45,7 @@ export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
     { name: 'About Us',  href: '#about' },
     { name: 'Programs',  href: '#programs' },
     { name: 'Workshops', href: '#workshops' },
+    { name: 'Mentors',   href: '#trainer' },
     { name: 'Blogs',     href: '#blogs' },
     { name: 'Contact',   href: '#contact' },
   ];
