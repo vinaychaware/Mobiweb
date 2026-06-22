@@ -179,22 +179,22 @@ export default function Trainer() {
               <img 
                 src="/soham_sharma.png" 
                 alt="Soham Sharma" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
               />
               
               {/* Overlapping Badges on bottom-left */}
               <div className="absolute bottom-5 left-5 right-5 flex flex-wrap gap-2.5 z-20">
                 <span className="backdrop-blur-md bg-slate-900/70 border border-white/10 text-white font-medium text-xs rounded-full px-3.5 py-1.5 flex items-center space-x-1.5">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                  <span>Robotics</span>
+                  <span>AI Agents</span>
                 </span>
                 <span className="backdrop-blur-md bg-slate-900/70 border border-white/10 text-white font-medium text-xs rounded-full px-3.5 py-1.5 flex items-center space-x-1.5">
                   <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                  <span>Machine Learning</span>
+                  <span>AI Automation</span>
                 </span>
                 <span className="backdrop-blur-md bg-slate-900/70 border border-white/10 text-white font-medium text-xs rounded-full px-3.5 py-1.5 flex items-center space-x-1.5">
                   <span className="w-2 h-2 rounded-full bg-purple-400" />
-                  <span>Embedded Systems</span>
+                  <span>LangChain</span>
                 </span>
               </div>
             </div>
@@ -215,13 +215,13 @@ export default function Trainer() {
               <div className="flex items-center space-x-2.5 mt-3 text-cyan-400">
                 <GraduationCap className="w-5 h-5 flex-shrink-0" />
                 <span className="font-heading font-semibold text-lg tracking-wide">
-                  Founder of Botmartz AI Solution Pvt. Ltd
+                  Founder & Director of Botmartz AI Solutions Pvt. Ltd.
                 </span>
               </div>
             </div>
 
             <p className="text-gray-300 text-lg leading-relaxed font-light">
-              Bridging the critical gap between theoretical frameworks and industrial application. With over a decade of experience in developing autonomous systems, machine learning pipelines, and enterprise-grade robotics solutions, I focus on equipping the next generation of engineers with practical, scalable, and forward-thinking methodologies.
+              Results-driven Tech Leader, Founder, and AI Product Manager with over 8 years in the IT industry. Specialized in building autonomous AI systems, custom agents, and workflow automation. Having successfully trained over 3,000 students and professionals in practical AI tools and frameworks, I bridge the gap between cutting-edge technical innovation and business value.
             </p>
 
             {/* Action Buttons */}
@@ -235,7 +235,7 @@ export default function Trainer() {
               </a>
               
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/soham-sharma/"
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3.5 rounded-xl font-bold text-sm tracking-wide text-gray-300 hover:text-white bg-slate-900/60 border border-slate-800 hover:border-slate-500 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-md cursor-pointer hover:scale-105 active:scale-95 text-center"
@@ -255,7 +255,7 @@ export default function Trainer() {
               <div>
                 <span className="text-gray-400 text-xs uppercase tracking-widest block font-bold">Latest Update</span>
                 <p className="text-white text-sm font-semibold mt-0.5">
-                  Currently leading the new cohort for <span className="text-cyan-400">Advanced Industrial Automation Lab</span>.
+                  Currently leading advanced cohorts on building <span className="text-cyan-400">Agentic Workflows and AI Automation</span>.
                 </p>
               </div>
             </div>

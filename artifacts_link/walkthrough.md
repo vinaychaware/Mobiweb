@@ -6,11 +6,11 @@ We have successfully implemented the new Trainer section featuring **Soham Sharm
 
 ## 🌟 Visual Preview
 
-### Desktop Profile View
-![Soham Sharma Profile (Desktop)](/C:/Users/Asus/.gemini/antigravity-ide/brain/dff31798-ffa4-4cb6-bd93-b63e9105e6b5/soham_sharma_1781860320061.png)
+### Desktop Profile View (With Actual Photo)
+![Soham Sharma Profile (Desktop) - Verified Actual Photo](C:/Users/Asus/.gemini/antigravity-ide/brain/dff31798-ffa4-4cb6-bd93-b63e9105e6b5/soham_sharma_mentor_1782121865220.png)
 
 ### Previous Lectures & Workshops Carousel (Clean Views)
-![Clean Workshops Carousel](/C:/Users/Asus/.gemini/antigravity-ide/brain/dff31798-ffa4-4cb6-bd93-b63e9105e6b5/workshop_carousel_clean_1781862046326.png)
+![Clean Workshops Carousel](C:/Users/Asus/.gemini/antigravity-ide/brain/dff31798-ffa4-4cb6-bd93-b63e9105e6b5/workshop_carousel_clean_1781862046326.png)
 
 ---
 
