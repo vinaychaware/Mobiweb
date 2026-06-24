@@ -24,7 +24,7 @@ export default function Hero({ onOpenEnroll }) {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center pt-48 overflow-hidden">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
