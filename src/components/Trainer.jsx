@@ -215,13 +215,13 @@ export default function Trainer() {
               <div className="flex items-center space-x-2.5 mt-3 text-cyan-400">
                 <GraduationCap className="w-5 h-5 flex-shrink-0" />
                 <span className="font-heading font-semibold text-lg tracking-wide">
-                  Founder & Director of Botmartz AI Solutions Pvt. Ltd.
+                 Expert AI Trainer 
                 </span>
               </div>
             </div>
 
             <p className="text-gray-300 text-lg leading-relaxed font-light">
-              Results-driven Tech Leader, Founder, and AI Product Manager with over 8 years in the IT industry. Specialized in building autonomous AI systems, custom agents, and workflow automation. Having successfully trained over 3,000 students and professionals in practical AI tools and frameworks, I bridge the gap between cutting-edge technical innovation and business value.
+              Results-driven Tech Leader, Trainer, and AI Product Manager with over 8 years in the IT industry. Specialized in building autonomous AI systems, custom agents, and workflow automation. Having successfully trained over 3,000 students and professionals in practical AI tools and frameworks, I bridge the gap between cutting-edge technical innovation and business value.
             </p>
 
             {/* Action Buttons */}

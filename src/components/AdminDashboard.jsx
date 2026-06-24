@@ -1276,6 +1276,8 @@ export default function AdminDashboard({ theme, toggleTheme }) {
                           <tr className="border-b border-slate-850 text-gray-500 font-bold uppercase tracking-wider pb-3">
                             <th className="py-2.5 px-3">Student Name</th>
                             <th className="py-2.5 px-3">Email Address</th>
+                            <th className="py-2.5 px-3">Phone</th>
+                            <th className="py-2.5 px-3">Category</th>
                             <th className="py-2.5 px-3">Selected Course</th>
                             <th className="py-2.5 px-3">Status</th>
                             <th className="py-2.5 px-3">Date Submitted</th>
@@ -1287,6 +1289,8 @@ export default function AdminDashboard({ theme, toggleTheme }) {
                             <tr key={en.id} className="hover:bg-slate-950/20 transition-colors">
                               <td className="py-3.5 px-3 font-semibold text-white">{en.name}</td>
                               <td className="py-3.5 px-3">{en.email}</td>
+                              <td className="py-3.5 px-3">{en.phone || 'N/A'}</td>
+                              <td className="py-3.5 px-3 text-indigo-400 font-medium">{en.userType || 'Student'}</td>
                               <td className="py-3.5 px-3 text-cyan-400">{en.program}</td>
                               <td className="py-3.5 px-3">
                                 <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] font-medium">
@@ -1409,9 +1413,15 @@ export default function AdminDashboard({ theme, toggleTheme }) {
               </div>
 
               {selectedInquiry.type === 'Enrollment' && (
-                <div className="bg-slate-950/40 border border-slate-850 p-4 rounded-xl space-y-1">
-                  <span className="text-gray-500 text-[9px] font-bold uppercase tracking-wider">Selected Program</span>
-                  <span className="block text-cyan-400 text-sm font-bold">{selectedInquiry.program}</span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-950/40 border border-slate-850 p-4 rounded-xl space-y-1">
+                    <span className="text-gray-500 text-[9px] font-bold uppercase tracking-wider">Selected Program</span>
+                    <span className="block text-cyan-400 text-xs font-semibold">{selectedInquiry.program}</span>
+                  </div>
+                  <div className="bg-slate-950/40 border border-slate-850 p-4 rounded-xl space-y-1">
+                    <span className="text-gray-500 text-[9px] font-bold uppercase tracking-wider">User Category</span>
+                    <span className="block text-indigo-400 text-xs font-semibold">{selectedInquiry.userType || 'Student'}</span>
+                  </div>
                 </div>
               )}
 

@@ -109,30 +109,51 @@ export const submitEnrollment = async (enrollmentData) => {
     const web3FormsKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '';
     if (!web3FormsKey) return;
     try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          access_key: web3FormsKey,
-          subject: `New Enrollment Alert${isDemo ? ' (Demo Mode)' : ''}: ${enrollmentData.name} (${enrollmentData.program})`,
-          from_name: 'Mobiweb Global Solutions',
-          to_email: 'ashutosh.agarwal@mobiwebgs.com',
-          name: enrollmentData.name,
-          email: enrollmentData.email,
-          phone: enrollmentData.phone,
-          program: enrollmentData.program,
-          userType: enrollmentData.userType,
-          college: enrollmentData.college || 'N/A',
-          gradYear: enrollmentData.gradYear || 'N/A',
-          message: `A new person has enrolled for a course.\n\nEnrollment Details:\n------------------\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nProgram: ${enrollmentData.program}\nUser Type: ${enrollmentData.userType}\nCollege/Company: ${enrollmentData.college || 'N/A'}\nGraduation Year: ${enrollmentData.gradYear || 'N/A'}`
-        })
-      });
-      console.log('✉️ Enrollment email notification sent to ashutosh.agarwal@mobiwebgs.com via Web3Forms');
+      const isEmail = web3FormsKey.includes('@');
+      if (isEmail) {
+        await fetch(`https://formsubmit.co/ajax/${web3FormsKey}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `New Enrollment Alert${isDemo ? ' (Demo Mode)' : ''}: ${enrollmentData.name} (${enrollmentData.program})`,
+            Name: enrollmentData.name,
+            Email: enrollmentData.email,
+            Phone: enrollmentData.phone,
+            Program: enrollmentData.program,
+            'User Category': enrollmentData.userType,
+            message: `A new person has enrolled for a course.\n\nEnrollment Details:\n------------------\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nProgram: ${enrollmentData.program}\nUser Type: ${enrollmentData.userType}`
+          })
+        });
+        console.log(`✉️ Enrollment email notification sent to ${web3FormsKey} via FormSubmit`);
+      } else {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: web3FormsKey,
+            subject: `New Enrollment Alert${isDemo ? ' (Demo Mode)' : ''}: ${enrollmentData.name} (${enrollmentData.program})`,
+            from_name: 'Mobiweb Global Solutions',
+            to_email: 'ashutosh.agarwal@mobiwebgs.com',
+            name: enrollmentData.name,
+            email: enrollmentData.email,
+            phone: enrollmentData.phone,
+            program: enrollmentData.program,
+            userType: enrollmentData.userType,
+            college: enrollmentData.college || 'N/A',
+            gradYear: enrollmentData.gradYear || 'N/A',
+            message: `A new person has enrolled for a course.\n\nEnrollment Details:\n------------------\nName: ${enrollmentData.name}\nEmail: ${enrollmentData.email}\nPhone: ${enrollmentData.phone}\nProgram: ${enrollmentData.program}\nUser Type: ${enrollmentData.userType}\nCollege/Company: ${enrollmentData.college || 'N/A'}\nGraduation Year: ${enrollmentData.gradYear || 'N/A'}`
+          })
+        });
+        console.log('✉️ Enrollment email notification sent to ashutosh.agarwal@mobiwebgs.com via Web3Forms');
+      }
     } catch (mailError) {
-      console.error('❌ Failed to send enrollment email via Web3Forms:', mailError);
+      console.error('❌ Failed to send enrollment email:', mailError);
     }
   };
 

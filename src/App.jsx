@@ -8,7 +8,7 @@ import Audience from './components/Audience';
 import Testimonials from './components/Testimonials';
 import FAQ from './components/FAQ';
 import Blogs from './components/Blogs';
-import StudentPortal from './components/StudentPortal';
+// import StudentPortal from './components/StudentPortal';
 import AdminDashboard from './components/AdminDashboard';
 import Footer from './components/Footer';
 import EnrollmentForm from './components/EnrollmentForm';
@@ -52,6 +52,18 @@ export default function App() {
     setIsEnrollOpen(true);
   };
 
+  // Auto-popup: show enrollment form once per session on first visit
+  useEffect(() => {
+    const hasSeenPopup = sessionStorage.getItem('enrollPopupShown');
+    if (!hasSeenPopup) {
+      const timer = setTimeout(() => {
+        setIsEnrollOpen(true);
+        sessionStorage.setItem('enrollPopupShown', 'true');
+      }, 1500); // 1.5 second delay so the page loads first
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Hash route matching for admin dashboard
   if (currentHash === '#admin') {
     return (
@@ -93,8 +105,8 @@ export default function App() {
           <div className="section-divider" />
           <Blogs />
 
-          <div className="section-divider" />
-          <StudentPortal />
+          {/* <div className="section-divider" />
+          <StudentPortal /> */}
         </main>
 
         {/* Footer & Contact */}

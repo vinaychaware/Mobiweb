@@ -63,22 +63,25 @@ export default function Navbar({ onOpenEnroll, theme, toggleTheme }) {
     <nav
       id="navbar"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'glass-nav py-3 shadow-xl shadow-black/20' : 'bg-transparent py-5'
+        scrolled ? 'glass-nav py-2 shadow-xl shadow-black/20' : 'bg-transparent py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-12">
+        <div className={`flex items-center justify-between transition-all duration-300 ${scrolled ? 'h-28' : 'h-36'}`}>
 
           {/* Logo */}
-          <a href="#home" onClick={() => handleNavClick('#home')} className="flex-shrink-0 flex items-center space-x-2.5 cursor-pointer group">
-            <img 
-              src="/logo.jpg" 
-              alt="Mobiweb Logo" 
-              className="w-9 h-9 rounded-xl shadow-lg shadow-cyan-500/10 group-hover:shadow-cyan-500/20 object-cover transition-shadow duration-300"
-            />
-            <span className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-white flex items-baseline">
-              MOBIWEB<span className="text-brand-cyan font-normal text-base ml-1">GLOBAL</span>
-            </span>
+          <a href="#home" onClick={() => handleNavClick('#home')} className="flex-shrink-0 flex items-center cursor-pointer group">
+            <div className="bg-transparent py-2 px-12 transition-all duration-300 overflow-hidden flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="Mobiweb Logo" 
+                className={`w-auto object-contain block rounded-lg transition-all duration-300 ${
+                  scrolled 
+                    ? 'h-24 scale-[1.55] group-hover:scale-[1.6]' 
+                    : 'h-32 scale-[1.55] group-hover:scale-[1.6]'
+                }`}
+              />
+            </div>
           </a>
 
           {/* Desktop Nav Links */}
